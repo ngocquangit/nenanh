@@ -1,4 +1,4 @@
 # install
 $ npm install
 # run 
-$ node index.js url_folder  
+$ node n url_folder  
