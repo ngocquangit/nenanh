@@ -46,5 +46,4 @@ async function getUrl(url, file) {
     .catch((error) => {
       console.log("Lỗi");
     });
-  console.log(data);
 }
