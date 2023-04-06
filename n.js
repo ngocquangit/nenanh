@@ -51,7 +51,7 @@ async function getUrl(url, file) {
       if(checkDone ){
         let sizeImg = await getSizeImage(url);
         let sizeMin = await getSizeImage(testFolderRes + "/" + file)
-        console.log(url + " => "+ (((sizeMin / sizeImg) !== 1 ) ? (sizeMin / sizeImg * 100).toFixed() : 0 ) + "%");
+        console.log(url + " => "+ (((sizeMin / sizeImg * 100).toFixed() != 100 ) ? (sizeMin / sizeImg * 100).toFixed() : 0 ) + "%");
       }
   }
 }
