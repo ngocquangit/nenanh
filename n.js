@@ -26,24 +26,43 @@ if (testFolder != "") {
 }
 
 async function getUrl(url, file) {
-  // Read image from disk as a Buffer
-  const image = await fs.createReadStream(url);
-
-  // Create a form and append image with additional fields
-  const form = new FormData();
-  form.append("files", image, file);
-
-  // Send form data with axios
-  const response = await axios.post("http://api.resmush.it/ws.php", form, {
-    headers: {},
-  });
-  let data = response.data.dest;
-  axios
-    .get(data, { responseType: "stream" })
-    .then((response) => {
-      response.data.pipe(fs.createWriteStream(testFolderRes + "/" + file));
-    })
-    .catch((error) => {
-      console.log("Lỗi");
+  let checkDone = false;
+  while (checkDone === false) {
+    // Read image from disk as a Buffer
+    const image = await fs.createReadStream(url);
+    // Create a form and append image with additional fields
+    const form = new FormData();
+    form.append("files", image, file);
+  
+    // Send form data with axios
+    const response = await axios.post("http://api.resmush.it/ws.php", form, {
+      headers: {},
     });
+    let data = response.data.dest;
+    axios
+      .get(data, { responseType: "stream" })
+      .then((response) => {
+        response.data.pipe(fs.createWriteStream(testFolderRes + "/" + file));
+        checkDone = true
+      })
+      .catch((error) => {
+        // console.log(error);
+      });
+      if(checkDone ){
+        let sizeImg = await getSizeImage(url);
+        let sizeMin = await getSizeImage(testFolderRes + "/" + file)
+        console.log(url + " => "+ (((sizeMin / sizeImg) !== 1 ) ? (sizeMin / sizeImg * 100).toFixed() : 0 ) + "%");
+      }
+  }
+}
+// get size image
+function getSizeImage(url) {
+  return new Promise(function (resolve, reject) {
+    fs.stat(url, function (err, stats) {
+        if (err) {
+            return reject(err)
+        }
+        return resolve(stats.size);
+    });
+  })
 }
